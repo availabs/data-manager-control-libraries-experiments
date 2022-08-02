@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+docker \
+  exec \
+  -it \
+  redis_dev \
+  /bin/bash

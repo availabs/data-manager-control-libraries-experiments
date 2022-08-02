@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+set -a
+
+docker \
+  run \
+  -it \
+  --rm \
+  --name redis_dev \
+  -v "$PWD/config":/usr/local/etc/redis \
+  -v "$PWD/data":/data \
+  -p 6379:6379 \
+  redis

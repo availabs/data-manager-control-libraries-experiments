@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# https://redis.io/docs/manual/cli/
+
+set -e
+set -a
+
+docker \
+  exec \
+  -it \
+  redis_dev \
+  redis-cli
