@@ -16,3 +16,8 @@
 > - Consistent.
 > - High performant. Try to get the highest possible throughput from Redis by
 >   combining efficient .lua scripts and pipelining.
+
+## Maybe Useful
+
+- [What is the proper setup?](https://github.com/taskforcesh/bullmq/issues/253)
+- [Global concurrency || Optional filterable job names](https://github.com/taskforcesh/bullmq/issues/610)
