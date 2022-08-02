@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const { join } = require("path");
+
+const Bree = require("bree");
+
+const config = {
+  jobs: [
+    {
+      name: "worker_1",
+      path: join(__dirname, "./worker.js"),
+      workerData: {
+        id: 1,
+      },
+    },
+    {
+      name: "worker_2",
+      path: join(__dirname, "./worker.js"),
+      workerData: {
+        id: 2,
+      },
+    },
+  ],
+  root: false,
+};
+
+const bree = new Bree(config);
+
+async function run(job) {
+  await bree.start(job);
+}
+
+if (!module.parent) {
+  run();
+} else {
+  module.exports = { run };
+}

@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+/* USAGE:
+          Run all tasks: ./cli 
+          Run worker_1 : ./cli worker_1
+          Run worker_2 : ./cli worker_2
+*/
+
+const { run } = require("./run");
+
+run(process.argv[2]);

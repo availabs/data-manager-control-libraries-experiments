@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+
+const { join } = require("path");
+
+const Bree = require("bree");
+
+/*
+// Provide task module paths
+const config = {
+  jobs: [
+    {
+      name: "manager",
+      path: join(__dirname, "./manager.js"),
+    },
+  ],
+  root: false,
+};
+*/
+
+/*
+// Provide non-default root dir
+const config = {
+  jobs: [
+    {
+      name: "manager",
+    },
+  ],
+  root: join(__dirname),
+};
+*/
+
+// Task Name Scoping
+const config = {
+  jobs: [
+    {
+      name: "subdir/manager",
+    },
+  ],
+  root: join(__dirname),
+};
+
+const bree = new Bree(config);
+
+(async () => {
+  await bree.start();
+})();

@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+const { join } = require("path");
+
+const Bree = require("bree");
+
+const config = {
+  jobs: [
+    {
+      name: "play",
+    },
+  ],
+  root: join(__dirname),
+};
+
+const bree = new Bree(config);
+
+async function main() {
+  await bree.start();
+}
+
+main();
