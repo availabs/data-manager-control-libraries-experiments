@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+const { Queue, Worker } = require("bullmq");
+
+async function main() {
+  const queue = new Queue("Ping-Pong");
+
+  new Worker(
+    "Ping-Pong",
+    async (job) => {
+      if (job.name === "PING") {
+        queue.add("PONG", { type: "PONG" });
+        return "PONG";
+      } else {
+        console.log("PONG declining job");
+        queue.add(job.name, { ...job.data, declined: true });
+      }
+    },
+    { limiter: { max: 1, duration: 3000 } }
+  );
+}
+
+main();

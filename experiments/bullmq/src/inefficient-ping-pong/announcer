@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+const { inspect } = require("util");
+
+const { QueueEvents } = require("bullmq");
+
+async function main() {
+  const queueEvents = new QueueEvents("Ping-Pong");
+
+  queueEvents.on("completed", (event) => {
+    if (event.returnvalue) {
+      console.log("====", event.returnvalue, "====");
+    } else {
+      // console.log(inspect(event));
+    }
+  });
+
+  queueEvents.on("failed", (event) => console.log(inspect(event)));
+}
+
+main();

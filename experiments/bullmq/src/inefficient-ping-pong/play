@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+const { fork } = require("child_process");
+const { join } = require("path");
+
+const { Queue, QueueScheduler } = require("bullmq");
+
+async function main() {
+  fork(join(__dirname, "./announcer"));
+  fork(join(__dirname, "./ping"));
+  fork(join(__dirname, "./pong"));
+
+  const queue = new Queue("Ping-Pong");
+
+  new QueueScheduler("Ping-Pong");
+
+  console.log("Start");
+  queue.add("PONG", { type: "PONG" });
+}
+
+main();
