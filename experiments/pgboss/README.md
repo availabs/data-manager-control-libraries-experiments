@@ -28,24 +28,15 @@ cd docker
 
 ## Opinion 2022/08/02
 
-pg-boss is a job queue, not an event bus.
+### Transactional Orchestrator Node
 
 I think this library has promise backing a single orchestrator node
 at the center of an event network.
 
-However, as far as I can tell, it does support broadcast events.
-This means that either
-
-- We can somehow guarantee that events arrive at nodes with the appropriate
-  handlers. I was unable to implement this, but it may be possible using this
-  library using either queue names or the subscribe/publish functionality.
-- There must be an orchestrator node that receives ALL events, then broadcasts
-  them and accepts offers from handlers.
-
 We could implement a [Redux](https://redux.js.org/)-like event-based system
 where nodes dispatch events to the orchestrator via local instances of
-pg-boss. Importantly, event-dispatch and database updates can happen within
-ATOMIC transactions if we use the same DB connection/transaction to mutate
+pg-boss. Importantly, _event-dispatch and database updates can happen within
+ATOMIC transactions_ if we use the same DB transaction to mutate
 the database and dispatch events.
 
 For further details on ATOMIC DB Updates and Event dispatch, see
@@ -53,16 +44,39 @@ For further details on ATOMIC DB Updates and Event dispatch, see
 - [Use database table as a message queue](https://youtu.be/YPbGW3Fnmbc?t=2607)
 - pg-boss [options.db](https://github.com/timgit/pg-boss/blob/master/docs/readme.md#newoptions)
 
-However, we would not want to send ALL events throughout the system to the
-orchestrator. I think it makes sense to limit global-level events to ONLY those events
-concerning global data. For example, local work nodes that wish to use the event-based
-model will need their own event network to manage subtasks. We would not want
-the silly-level logging events of subtasks sent to the production database
-and possibly broadcast throughout the entire network of workers/handlers.
+### pg-boss is a job queue, not an event bus
 
-This means that there must be a different event-based library backing the
-local-level task orchestrator. A single model/interface would be better than
-many models/interfaces.
+As far as I can tell, pg-boss does support events broadcast.
+
+This means that either
+
+- There is a single node that is able to start all event handlers.
+
+  - It would seem burdensome to impose this constraint on the system.
+
+    - Subtask ETL changes would require updates to the orchestrator node's
+      menagerie of event handlers.
+
+- We can somehow guarantee that events arrive at nodes with the appropriate
+  handlers. I was unable to implement this, but it may be possible using this
+  library using either queue names or the subscribe/publish functionality.
+
+- There must be an orchestrator node that receives ALL events, then broadcasts
+  them and accepts offers from handlers.
+
+### Not suitable for low-level subtask automation
+
+We would not want to send ALL events throughout the system to the orchestrator.
+I think it makes sense to limit global-level events to ONLY those events
+concerning global data. For example, local work nodes that wish to use the
+event-based model will need their own event network to manage subtasks. We
+would not want the silly-level logging events of subtasks sent to the
+production database and possibly broadcast throughout the entire network of
+workers/handlers.
+
+This means that there must be a different library backing local-level task
+orchestrators. A single model/interface would be better than many
+models/interfaces.
 
 Also, we need to find/implement the distributed and local event bus architecture(s)
 as well as the work allocation logic.
@@ -73,4 +87,4 @@ NOTE: The work allocation logic MUST handle:
   - Versioning? Handlers of different versions and consistency for an Aggregate UPDATE.
     - If there is a set of VIEW updates (EG monthly calculations for a year)
       we MUST not use inconsistent handler versions.
-  - dev laptops in dev environment **MUST NOT** accidentally be assigned events.
+  - We **MUST NOT** assign work to dev laptops in dev environment.
