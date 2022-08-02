@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+require("ts-node").register();
+
+const _ = require("lodash");
+
+const listenForQueueEvents = require("./listenForQueueEvents.ts").default;
+const startPaintJobWorkers = require("./startPaintJobWorkers").default;
+const addPaintJob = require("./addPaintJob").default;
+
+listenForQueueEvents();
+startPaintJobWorkers();
+
+const colors = ["black", "white", "red", "green"];
+
+async function main() {
+  let counter = 0;
+
+  while (++counter <= 3) {
+    addPaintJob(colors[_.random(0, colors.length - 1)]);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  setTimeout(() => console.log("\nPress CTRL-c to end process."), 3000);
+}
+
+main();
