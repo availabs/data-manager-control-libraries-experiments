@@ -18,3 +18,12 @@
 - [Bree](https://jobscheduler.net/)
 
 - [breejs/bree](https://github.com/breejs/bree)
+
+## Opinion 2022/08/02
+
+Bree is a job scheduler, not a workflow manager.
+
+Bree doesn't appear to offer what we will need to automate complex ETL processes.
+
+Bree offers sandboxing and retry logic, but not sufficient semantics for
+orchestrating complex workflow processes.
