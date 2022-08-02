@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+const gulp = require("gulp");
+
+const workflow = require("./workflow");
+
+gulp.task("test", workflow.run);
+
+gulp.task("test")();
