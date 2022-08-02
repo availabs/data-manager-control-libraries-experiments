@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+docker \
+  exec \
+  -it \
+  pgboss_dev_db \
+  /bin/bash
