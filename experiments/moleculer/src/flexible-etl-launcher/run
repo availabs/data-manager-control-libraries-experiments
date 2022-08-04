@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const yargs = require("yargs");
+
+const addCommands = require("./src/services/transformations/add/yargs_wrapper");
+const multiplyCommands = require("./src/services/transformations/multiply/yargs_wrapper");
+
+const taskCommands = yargs.parserConfiguration({
+  "camel-case-expansion": false,
+  "flatten-duplicate-arrays": false,
+});
+
+// WARNING: You need to be careful about command name collisions.
+
+Object.keys(addCommands).forEach((cmd) => {
+  taskCommands.command(addCommands[cmd]);
+});
+
+Object.keys(multiplyCommands).forEach((cmd) => {
+  taskCommands.command(multiplyCommands[cmd]);
+});
+
+taskCommands
+  .demandCommand()
+  .recommendCommands()
+  .strict()
+  .wrap(yargs.terminalWidth() / 1.618).argv;

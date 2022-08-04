@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+const yargs = require("yargs");
+
+const { add } = require("./yargs_wrapper");
+
+const taskCommands = yargs.parserConfiguration({
+  "camel-case-expansion": false,
+  "flatten-duplicate-arrays": false,
+});
+
+//  Make add the default command
+//    https://github.com/yargs/yargs/blob/master/docs/advanced.md#default-commands
+const config = { ...add, command: "$0" };
+
+taskCommands.command(config);
+
+taskCommands
+  .demandCommand()
+  .recommendCommands()
+  .strict()
+  .wrap(yargs.terminalWidth() / 1.618).argv;

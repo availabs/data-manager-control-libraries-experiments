@@ -27,3 +27,6 @@ Bree doesn't appear to offer what we will need to automate complex ETL processes
 
 Bree offers sandboxing and retry logic, but not sufficient semantics for
 orchestrating complex workflow processes.
+
+I do not see any way to call the jobs with parameters
+(see [source code](https://github.com/breejs/bree/blob/ae91c1e1f20ce9707724b46727e3c7ffcf9a9aa0/src/index.js).

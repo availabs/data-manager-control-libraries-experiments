@@ -8,6 +8,7 @@
     "bullmq": "^1.86.10",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "find": "^0.3.0",
     "gulp": "^4.0.2",
     "lodash": "^4.17.21",
     "moleculer": "^0.14.21",
@@ -21,7 +22,10 @@
     "yargs": "^17.5.1",
     "zx": "^7.0.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/find": "^0.2.1",
+    "@types/yargs": "^17.0.10"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
