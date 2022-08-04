@@ -5,6 +5,10 @@
 
 set -e
 
+mkdir -p ./ca
+
+pushd ./ca >/dev/null
+
 rm -f *.pem
 
 SUBJ="/C=US/ST=New York/L=Albany/O=./OU=."
@@ -25,7 +29,7 @@ openssl req -new -x509 -nodes -days 365000 \
 # Creating the Server's Certificate and Keys
 
 echo 'Generate the private key and certificate request'
-openssl req -newkey rsa:2048 -nodes -days 365000 \
+openssl req -newkey rsa:4096 -nodes -days 365000 \
   -subj "$SUBJ/CN=." \
   -keyout server-key.pem \
   -out server-req.pem
@@ -61,3 +65,5 @@ echo 'Verify the client certificate'
 openssl verify -CAfile ca-cert.pem \
    ca-cert.pem \
    client-cert.pem
+
+popd >/dev/null

@@ -2,18 +2,13 @@
 
 USAGE:
 
-1. Create the TLS certificates
+1. Create the TLS certificates: [`./createCertificates`](./createCertificates)
 
-```sh
-cd ./ca
-createCertificates
-```
+2. Configure the server: [`./config/nats-server.conf`](./config/nats-server.conf)
 
-2. Configure the server: [./config/nats-server.conf](./config/nats-server.conf)
+3. Configure the Docker container: [`./nats.env`](./nats.env)
 
-3. Configure the Docker container: [./nats.env](./nats.env)
-
-4. Start the NATS server: `./start`
+4. Start the NATS server: [`./start`](./start)
 
 ## References
 
