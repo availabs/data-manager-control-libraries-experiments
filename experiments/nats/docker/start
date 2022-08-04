@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+set -a
+
+source ./nats.env
+
+## NOTE: container exposed ports defined in ./config/nats-server.conf
+
+docker \
+  run \
+  -it \
+  --rm \
+  --name $NATS_CONTAINER_NAME \
+  -v "$PWD/config":/nats_config/ \
+  -v "$PWD/ca":/nats_ca \
+  -p $NATS_PORT:4222 \
+  -p $NATS_MONITOR_PORT:8222 \
+  -p $NATS_CLUSTER_PORT:6222 \
+  nats \
+    -c /nats_config/nats-server.conf \
+    --tlscert "/nats_ca/server-cert.pem" \
+    --tlskey "/nats_ca/server-key.pem" \
+    --tlsverify \
+    --tlscacert "/nats_ca/client-cert.pem" \
