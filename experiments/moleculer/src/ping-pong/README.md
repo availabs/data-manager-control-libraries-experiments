@@ -1,6 +1,6 @@
 # PING-PONG
 
-Services communicate over NATS EventBus
+Authenticated services communicate over encrypted NATS EventBus.
 
 1. This experiment uses the [NATS experiment server](../../../nats/docker).
    Make sure the certificates are created and the server is running.
