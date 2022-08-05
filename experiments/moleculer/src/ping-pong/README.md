@@ -2,8 +2,8 @@
 
 Services communicate over NATS EventBus
 
-1. This experiment uses the [NATS experiment server](../../../nats). Make sure
-   the certificates are created and the server is running.
+1. This experiment uses the [NATS experiment server](../../../nats/docker).
+   Make sure the certificates are created and the server is running.
 
 2. Start the ping-pong game:
 
