@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const { inspect } = require("util");
+const { join } = require("path");
+
+const { ServiceBroker } = require("moleculer");
+
+// See: ../../../nats/docker/
+const NATS_server = "nats://localhost:4222";
+//
+// More info: https://github.com/nats-io/node-nats#tls
+const NATS_TLS_config = {
+  // https://stackoverflow.com/a/16311147/3970755
+  rejectUnauthorized: false,
+  key: fs.readFileSync(join(__dirname, "ca/client-key.pem")),
+  cert: fs.readFileSync(join(__dirname, "./ca/client-cert.pem")),
+  ca: [fs.readFileSync(join(__dirname, "./ca/ca-cert.pem"))],
+};
+
+const NATS_Options = {
+  servers: [NATS_server],
+  tls: NATS_TLS_config,
+};
+
+const brokerNode1 = new ServiceBroker({
+  nodeID: "ping-node",
+  transporter: {
+    type: "NATS",
+    options: NATS_Options,
+  },
+});
+
+brokerNode1.createService({
+  name: "ping",
+
+  events: {
+    PONG: {
+      group: "ping-pong",
+      handler(ctx) {
+        // console.log(inspect(ctx));
+        console.log("==== PING ====");
+        setTimeout(() => ctx.emit("PING"), 3000);
+      },
+    },
+  },
+});
+
+const brokerNode2 = new ServiceBroker({
+  nodeID: "pong-node",
+  transporter: {
+    type: "NATS",
+    options: NATS_Options,
+  },
+});
+
+brokerNode2.createService({
+  name: "pong",
+
+  dependencies: ["ping"],
+
+  started() {
+    brokerNode2.emit("PONG");
+  },
+
+  events: {
+    PING: {
+      group: "ping-pong",
+      handler(ctx) {
+        // console.log(inspect(ctx));
+        console.log("==== PONG ====");
+        setTimeout(() => ctx.emit("PONG"), 3000);
+      },
+    },
+  },
+});
+
+// Start both brokers
+Promise.all([brokerNode1.start(), brokerNode2.start()]);
