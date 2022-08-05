@@ -1,0 +1,216 @@
+#!/usr/bin/env node
+
+// FIXME: Game sometimes hangs if players enter and leave.
+
+const fs = require("fs");
+// const { inspect } = require("util");
+const { join } = require("path");
+
+const { ServiceBroker } = require("moleculer");
+const uuid = require("uuid");
+const dedent = require("dedent");
+
+// See: ../../../nats/docker/
+// const NATS_server = "nats://some.remote.server:4222"; // TESTED
+const NATS_server = "nats://localhost:4222";
+const serviceBrokerLogLevel = "warn";
+
+function exitWithUsage() {
+  console.error(
+    dedent(
+      `
+        USAGE:
+                ./start ping 
+              OR
+                ./start pong 
+      `
+    )
+  );
+  process.exit(1);
+}
+
+if (process.argv.length < 3) {
+  exitWithUsage();
+}
+
+const PLAYER = process.argv[2].toLowerCase();
+
+const players = ["ping", "pong"];
+
+if (!players.includes(PLAYER)) {
+  exitWithUsage();
+}
+
+const OTHER = players.find((p) => p !== PLAYER);
+
+//
+// More info: https://github.com/nats-io/node-nats#tls
+const NATS_TLS_config = {
+  // https://stackoverflow.com/a/16311147/3970755
+  rejectUnauthorized: false,
+  key: fs.readFileSync(join(__dirname, "ca/client-key.pem")),
+  cert: fs.readFileSync(join(__dirname, "./ca/client-cert.pem")),
+  ca: [fs.readFileSync(join(__dirname, "./ca/ca-cert.pem"))],
+};
+
+const NATS_Options = {
+  servers: [NATS_server],
+  tls: NATS_TLS_config,
+};
+
+const nodeID = `${PLAYER}:${uuid.v4()}`;
+
+const brokerNode = new ServiceBroker({
+  nodeID,
+
+  transporter: {
+    type: "NATS",
+    options: NATS_Options,
+  },
+  logLevel: serviceBrokerLogLevel,
+});
+
+let playerCt = 0;
+
+const serviceConfig = {
+  name: PLAYER,
+
+  dependencies: PLAYER === "ping" ? ["pong"] : null,
+
+  created() {
+    this.gameOn = Promise.resolve();
+  },
+
+  async started() {
+    // Are we joining a game or starting it?
+    if (PLAYER === "ping") {
+      const services = await brokerNode.call("$node.services");
+
+      // If this is the only PING node, "ping" will not yet appear in services.
+      const otherPingsExist = services.some(({ name }) => name === "ping");
+
+      // First PING starts game
+      if (!otherPingsExist) {
+        const volleyCt = 0;
+        ++playerCt;
+
+        const p = PLAYER.toUpperCase();
+
+        console.log("STARTING GAME");
+        console.log(
+          dedent(`
+          ===== ${p} =====
+            volleyCt: ${volleyCt}
+            playerCt: ${playerCt}
+        `)
+        );
+
+        brokerNode.emit(p, {
+          from: brokerNode.nodeID,
+          volleyCt,
+        });
+        // }
+      } else {
+        console.log("JOINING TEAM PING");
+      }
+    }
+  },
+
+  events: {
+    "$node.connected": {
+      group: "ping-pong",
+      async handler({ node }) {
+        const wasPongNode = node.services.some(({ name }) => name === "pong");
+
+        if (wasPongNode) {
+          console.log("PONG NODE CONNECTED");
+
+          const services = await brokerNode.call("$node.services");
+
+          // console.log(JSON.stringify(services, null, 4));
+
+          const pongs = services.find(({ name }) => name === "pong");
+
+          if (pongs) {
+            if (pongs.nodes.length === 1) {
+              console.log("(RE)STARTING GAME");
+              playerCt = 0;
+
+              const pings = services.find(({ name }) => name === "ping");
+              const pingNodes = pings.nodes.sort();
+
+              if (pingNodes[0] === nodeID) {
+                const volleyCt = 0;
+                const p = PLAYER.toUpperCase();
+
+                console.log(
+                  dedent(`
+                ===== ${p} =====
+                  volleyCt: ${volleyCt}
+                  playerCt: ${playerCt}
+              `)
+                );
+
+                brokerNode.emit(p, {
+                  from: brokerNode.nodeID,
+                  volleyCt,
+                });
+              }
+            }
+          }
+        }
+      },
+    },
+    "$node.disconnected": {
+      group: "ping-pong",
+      async handler({ node }) {
+        const wasPongNode = node.services.some(({ name }) => name === "pong");
+
+        if (wasPongNode) {
+          console.log("PONG NODE DISCONNECTED");
+
+          const services = await brokerNode.call("$node.services");
+
+          const anyPong = services.some(({ name }) => name === "pong");
+
+          if (!anyPong) {
+            console.log("NO PONGS PLAYING. GAME OVER.");
+          }
+        }
+      },
+    },
+    [OTHER.toUpperCase()]: {
+      group: "ping-pong",
+      async handler(ctx) {
+        // console.log(inspect(ctx));
+
+        await this.gameOn;
+
+        const p = PLAYER.toUpperCase();
+        const volleyCt = (ctx.params.volleyCt || 0) + 1;
+        ++playerCt;
+
+        console.log(
+          dedent(`
+            ===== ${p} =====
+              volleyCt: ${volleyCt}
+              playerCt: ${playerCt}
+          `)
+        );
+
+        setTimeout(
+          () =>
+            brokerNode.emit(p, {
+              from: brokerNode.nodeID,
+              volleyCt,
+            }),
+          3000 // FIXME: PONG emits before PING connected. Without this delay, broken.
+        );
+      },
+    },
+  },
+};
+
+brokerNode.createService(serviceConfig);
+
+brokerNode.start();
