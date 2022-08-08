@@ -14,8 +14,6 @@ function getDataSourcesDAG(): Graph {
       ORDER BY 1
   `;
 
-  const db = createDbConnection();
-
   const graph = createDbConnection()
     .prepare(sql)
     .all()
@@ -23,8 +21,6 @@ function getDataSourcesDAG(): Graph {
       node_id,
       dependencies: JSON.parse(deps),
     }));
-
-  db.close();
 
   return graph;
 }
@@ -34,6 +30,7 @@ export default async function loadDataTables() {
 
   const tasksByNodeId = {};
 
+  // create all tasks
   for (const { node_id, dependencies } of graph) {
     const dependencyTasks = dependencies.map((id) => tasksByNodeId[id]);
 
@@ -47,5 +44,6 @@ export default async function loadDataTables() {
 
   const controller = new SuperStepEtlController(Object.values(tasksByNodeId));
 
+  // run it
   await controller.main();
 }
