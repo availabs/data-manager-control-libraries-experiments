@@ -55,13 +55,6 @@ ists, skipping
 
 ==> task npmrds_load_travel_times: all dependencies met. Proceeding with task.
 
-{
-    "PGHOST": "127.0.0.1",
-    "PGPORT": "5432",
-    "PGDATABASE": "npmrds_dev",
-    "PGUSER": "postgres",
-    "PGPASSWORD": "dev3loper"
-}
 psql:./createRootNPMRDSDataTable.sql:12: NOTICE:  relation "npmrds" already exists, skipping
 psql:./createStateNPMRDSDataTable.sql:75: NOTICE:  schema "vt" already exists, skipping
 ALL UPDATES COMPLETED
