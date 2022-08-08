@@ -89,4 +89,4 @@ metadata.sqlite3> select * from data_sources limit 25;
 Time: 0.007s
 ```
 
-- [ETL Controller](https://github.com/availabs/data-manager-control-libraries-experiments/blob/6ff279289c4de8303ba76d075ced632c5d8c428e/experiments/data-manager-etl-control-prototype_v.0.0.1/src/updating/SuperStepEtlController/index.ts#L87-L105) coordinates [ETL Tasks](https://github.com/availabs/data-manager-control-libraries-experiments/blob/05cfe4403ed4cad72aa836bd3bd3237797d3a5fd/experiments/data-manager-etl-control-prototype_v.0.0.1/src/updating/SuperStepUpdateTask/index.ts#L34-L63)
+- [ETL Controller](https://github.com/availabs/data-manager-control-libraries-experiments/blob/6ff279289c4de8303ba76d075ced632c5d8c428e/experiments/data-manager-etl-control-prototype_v.0.0.1/src/updating/SuperStepEtlController/index.ts#L87-L105) coordinates [ETL Tasks](https://github.com/availabs/data-manager-control-libraries-experiments/blob/05cfe4403ed4cad72aa836bd3bd3237797d3a5fd/experiments/data-manager-etl-control-prototype_v.0.0.1/src/updating/SuperStepUpdateTask/index.ts#L34-L62)
