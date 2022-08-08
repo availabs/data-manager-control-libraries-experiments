@@ -85,7 +85,10 @@ export class SuperStepEtlController {
     let pending = _.shuffle(this.tasks.filter(({ done }) => !done));
 
     for await (const step of this.stepGenerator) {
-      console.log("step:", step);
+      console.log("-".repeat(20));
+      console.log();
+      console.log("STEP:", step);
+      console.log();
 
       // Because of database locking issue, we need to run sequentially
       for (const task of pending) {
