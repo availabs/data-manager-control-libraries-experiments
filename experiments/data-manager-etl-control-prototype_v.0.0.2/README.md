@@ -25,21 +25,7 @@ Actually running the code requires the following dependencies:
 Sample output:
 
 ```sh
-./run
-run timestamp: 20220808T182612
-makeStepGenerator
---------------------
-
-STEP: 1
-
-==> task npmrds_load_tmc_identification: awaiting npmrds_transform_export
-==> task npmrds_transform_export: all dependencies met. Proceeding with ETL.
-
-loading TMC_Identification
-loading TMC_Identification: 48.495ms
-loading ALL_VEHICLES
-^C
-➜  data-manager-etl-control-prototype_v.0.0.2 git:(main) ✗ ./run
+$ ./run
 run timestamp: 20220808T182650
 makeStepGenerator
 --------------------
