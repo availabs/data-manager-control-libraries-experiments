@@ -39,6 +39,7 @@ export default class SuperStepUpdateTask implements SuperStepTaskInterface {
     const pendingDeps = this.dependencies
       .filter((d) => !d.done)
       .map(({ id }) => id);
+
     if (pendingDeps.length) {
       console.log(`==> task ${this.id} is still awaiting ${pendingDeps}`);
       return;
@@ -54,6 +55,7 @@ export default class SuperStepUpdateTask implements SuperStepTaskInterface {
     );
 
     this._done = true;
+
     process.nextTick(() => this._resolveDoneData(this.id));
 
     console.log(`==> task ${this.id} done`);
