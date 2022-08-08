@@ -2,11 +2,12 @@
 
 ## run it
 
-````sh
+```sh
 $ ./run
 ```
 
 Sample output:
+
 ```sh
 --------------------
 
@@ -47,7 +48,7 @@ STEP: 9
 ==> task 122 done
 ==> task 115 done
 ALL UPDATES COMPLETED
-````
+```
 
 ## How it works
 
