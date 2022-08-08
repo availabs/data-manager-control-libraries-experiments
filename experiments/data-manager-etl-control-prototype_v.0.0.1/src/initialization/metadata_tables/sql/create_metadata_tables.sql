@@ -6,20 +6,20 @@ CREATE TABLE IF NOT EXISTS metadata.data_sources (
 
   dependencies  TEXT NOT NULL,
 
-  metadata      TEXT,
+  -- metadata      TEXT,
 
   CHECK (
     json_type( dependencies ) = 'array'
-  ),
-
-  CHECK (
-    json_valid(
-      COALESCE(
-        metadata,
-        '{}'
-      )
-    )
   )
+  -- ,
+  -- CHECK (
+  --   json_valid(
+  --     COALESCE(
+  --       metadata,
+  --       '{}'
+  --     )
+  --   )
+  -- )
 ) ;
 
 /*
