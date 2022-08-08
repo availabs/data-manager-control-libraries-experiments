@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+require("ts-node").register();
+
+const { default: load } = require("./loadDataTables");
+
+function main() {
+  load();
+}
+
+main();

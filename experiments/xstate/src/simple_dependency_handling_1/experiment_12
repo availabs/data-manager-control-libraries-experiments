@@ -1,0 +1,96 @@
+#!/usr/bin/env node
+
+class WrappedTask {
+  constructor(task, dependencies = null) {
+    this.task = task;
+
+    this.dependenciesData = (async () => {
+      if (!dependencies) {
+        return {};
+      }
+
+      const depNames = Object.keys(dependencies);
+      const depsData = await Promise.all(
+        depNames.map(async (name) => ({
+          name,
+          doneData: await dependencies[name].doneData,
+        }))
+      );
+
+      return depsData.reduce((acc, { name, doneData }) => {
+        acc[name] = doneData;
+        return acc;
+      }, {});
+    })();
+
+    this.doneData = new Promise((resolve) => {
+      this.resDoneData = resolve;
+    });
+  }
+
+  async main() {
+    const depsData = await this.dependenciesData;
+    const doneData = await this.task.main(depsData);
+
+    process.nextTick(() => this.resDoneData(doneData));
+
+    return doneData;
+  }
+}
+
+const task1 = new WrappedTask({
+  async main() {
+    console.log(".... task 1 executing");
+    await new Promise((resolve) => setTimeout(() => resolve(), 1000));
+    console.log(".... task 1 complete");
+    return "foo";
+  },
+});
+
+const task2 = new WrappedTask(
+  {
+    async main({ task1 }) {
+      console.log(".... task 2 executing");
+      await new Promise((resolve) => setTimeout(() => resolve(), 2000));
+      console.log(".... task 2 complete");
+      return `${task1} bar`;
+    },
+  },
+  { task1 }
+);
+
+const task3 = new WrappedTask(
+  {
+    async main({ task1, task2 }) {
+      console.log(".... task 3 executing");
+      await new Promise((resolve) => setTimeout(() => resolve(), 3000));
+      console.log(".... task 3 complete");
+      return `${task1} ${task2} baz`;
+    },
+  },
+  { task1, task2 }
+);
+
+async function main() {
+  const [task1_data, task2_data, task3_data] = await Promise.all([
+    task1.main(),
+    task2.main(),
+    task3.main(),
+  ]);
+
+  console.log(JSON.stringify({ task1_data, task2_data, task3_data }, null, 4));
+}
+
+main();
+
+// .... task 1 executing
+// .... task 1 complete
+// .... task 2 executing
+// .... task 2 complete
+// .... task 3 executing
+// .... task 3 complete
+// {
+//     "task1_data": "foo",
+//     "task2_data": "foo bar",
+//     "task3_data": "foo foo bar baz"
+// }
