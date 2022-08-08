@@ -2,9 +2,10 @@ import _ from "lodash";
 
 import { NodeID, Graph } from "../../../index.d";
 
-const D = 5;
-const N = 3;
-const P = 0.5;
+const D = 9; // Depth of the dependencies
+const N = 10; // Initialial number of root nodes
+const P = 0.5; // Probability of connecting
+const A = true; // Allow connecting to ancestors, not just parents.
 
 function chooseDependencies(
   dependencyCandidates: NodeID[] = [],
@@ -26,6 +27,7 @@ export default function generateDataSourcesDAG({
   depth = D,
   num_root_nodes = N,
   prob_connect = P,
+  direct_ancestor_connections = A,
 } = {}): Graph {
   console.log(JSON.stringify({ depth, num_root_nodes, prob_connect }, null, 4));
 
@@ -33,7 +35,7 @@ export default function generateDataSourcesDAG({
 
   const nodeDependencies = {};
 
-  let previousGenerationNodeIds = [];
+  let dependencyCandidates = [];
 
   for (let d = 0; d < depth; ++d) {
     const currentGenerationNodeIds = [];
@@ -42,14 +44,18 @@ export default function generateDataSourcesDAG({
       const id = ++nodeId;
 
       nodeDependencies[id] = chooseDependencies(
-        previousGenerationNodeIds,
+        dependencyCandidates,
         prob_connect
       );
 
       currentGenerationNodeIds.push(id);
     }
 
-    previousGenerationNodeIds = currentGenerationNodeIds;
+    if (direct_ancestor_connections) {
+      dependencyCandidates.push(...currentGenerationNodeIds);
+    } else {
+      dependencyCandidates = currentGenerationNodeIds;
+    }
   }
 
   const graph = Object.keys(nodeDependencies)

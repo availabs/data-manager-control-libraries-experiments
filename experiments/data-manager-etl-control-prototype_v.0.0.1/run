@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+rm -rf data
+
+./src/initialization/metadata_tables/run
+./src/initialization/data_tables/run
