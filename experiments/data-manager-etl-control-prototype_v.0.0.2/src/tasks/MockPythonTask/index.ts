@@ -53,15 +53,18 @@ export default class MockPythonTask implements TaskI {
       return;
     }
 
+    const ETL_CONTROL_MSG = "Hello, MOCK Python Task";
+
     try {
+      console.log();
+      console.log(`==> MOCK ${this.name} says: ${ETL_CONTROL_MSG}`);
+
       const { stdout, stderr, code } = await exec(
         join(__dirname, "./mockPythonTask.py"),
         [],
-        { env: { ETL_CONTROL_MSG: "Hello, MOCK Python Task" } }
+        { env: { ETL_CONTROL_MSG } }
       );
 
-      console.log();
-      console.log(`==> MOCK ${this.name}`);
       console.table({ stdout, stderr, code });
       console.log();
 
