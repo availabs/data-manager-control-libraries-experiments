@@ -9,6 +9,7 @@ import MockDownloadExport from "../tasks/MockDownloadExport";
 import DownloadedNpmrdsExportIntoSqlite from "../tasks/DownloadedNpmrdsExportIntoSqlite";
 import LoadNpmrdsTmcIdenfification from "../tasks/LoadNpmrdsTmcIdenfification";
 import LoadNpmrdsTravelTimes from "../tasks/LoadNpmrdsTravelTimes";
+import MockPythonTask from "../tasks/MockPythonTask";
 
 export default class AggregateNpmrdsUpdateTask extends SuperStepEtlController {
   constructor(updateRequestTask: NpmrdsUpdateRequest) {
@@ -23,6 +24,7 @@ export default class AggregateNpmrdsUpdateTask extends SuperStepEtlController {
         new DownloadedNpmrdsExportIntoSqlite(),
         new LoadNpmrdsTmcIdenfification(),
         new LoadNpmrdsTravelTimes(),
+        new MockPythonTask(),
       ]
       // ])
     );
