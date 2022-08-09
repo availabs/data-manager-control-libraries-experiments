@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
     "target": "ES2020",
     "lib": ["ES2020", "DOM"],
     "experimentalDecorators": true,
@@ -17,7 +16,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "preserveSymlinks": true
   },
   "include": ["examples"],
   "exclude": ["node_modules"]
