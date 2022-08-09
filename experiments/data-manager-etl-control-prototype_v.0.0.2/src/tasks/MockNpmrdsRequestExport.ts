@@ -1,6 +1,6 @@
 import { TaskI, EtlTaskName } from "../types";
 
-export default class MockDownloadExport implements TaskI {
+export default class MockNpmrdsRequestExport implements TaskI {
   readonly name: EtlTaskName;
 
   private _done: boolean;
@@ -8,10 +8,10 @@ export default class MockDownloadExport implements TaskI {
   readonly doneData: Promise<Record<string, any>>;
   private dependencies: TaskI[];
 
-  static readonly dependenciesNames = [EtlTaskName.npmrds_export_ready];
+  static readonly dependenciesNames = [EtlTaskName.npmrds_update_request];
 
   constructor() {
-    this.name = EtlTaskName.npmrds_download_export;
+    this.name = EtlTaskName.npmrds_request_export;
 
     this._done = false;
 
@@ -19,8 +19,11 @@ export default class MockDownloadExport implements TaskI {
   }
 
   receiveOthers(others: TaskI[]) {
+    console.log("==> MockNpmrdsRequestExport.receiveOthers");
+    console.log(JSON.stringify(others.map((o) => o.name)));
+
     this.dependencies = others.filter((o) =>
-      MockDownloadExport.dependenciesNames.includes(o.name)
+      MockNpmrdsRequestExport.dependenciesNames.includes(o.name)
     );
   }
 
@@ -42,18 +45,19 @@ export default class MockDownloadExport implements TaskI {
       return;
     }
 
-    const { npmrds_export_request_id } = await this.dependencies[0].doneData;
+    const { state, year, month } = await this.dependencies[0].doneData;
+
+    const doneData = {
+      npmrds_export_request_id: "mock-npmrds-export-request-id",
+    };
+
+    const mm = `0${month}`.slice(-2);
 
     console.log();
     console.log(
-      `==> MOCK ${this.name}: download of ${npmrds_export_request_id} COMPLETE`
+      `==> MOCK ${this.name}: request export for ${state} ${year}/${mm} COMPLETE`
     );
     console.log();
-
-    // FIXME: For this proof-of-concept, I'm using an existing NPMRDS export on my laptop
-    const doneData = {
-      npmrds_export_name: "npmrdsx_vt_201602_v20220307T181553",
-    };
 
     process.nextTick(() => this._resolveDoneData(doneData));
 

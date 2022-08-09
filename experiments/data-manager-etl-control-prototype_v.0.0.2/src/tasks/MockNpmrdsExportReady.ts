@@ -1,6 +1,8 @@
 import { TaskI, EtlTaskName } from "../types";
 
-export default class MockDownloadExport implements TaskI {
+//  Watcher tasks start running on first step and resolve doneData awaited event occurs.
+
+export default class MockNpmrdsExportReady implements TaskI {
   readonly name: EtlTaskName;
 
   private _done: boolean;
@@ -8,10 +10,10 @@ export default class MockDownloadExport implements TaskI {
   readonly doneData: Promise<Record<string, any>>;
   private dependencies: TaskI[];
 
-  static readonly dependenciesNames = [EtlTaskName.npmrds_export_ready];
+  static readonly dependenciesNames = [EtlTaskName.npmrds_request_export];
 
   constructor() {
-    this.name = EtlTaskName.npmrds_download_export;
+    this.name = EtlTaskName.npmrds_export_ready;
 
     this._done = false;
 
@@ -20,7 +22,7 @@ export default class MockDownloadExport implements TaskI {
 
   receiveOthers(others: TaskI[]) {
     this.dependencies = others.filter((o) =>
-      MockDownloadExport.dependenciesNames.includes(o.name)
+      MockNpmrdsExportReady.dependenciesNames.includes(o.name)
     );
   }
 
@@ -46,13 +48,12 @@ export default class MockDownloadExport implements TaskI {
 
     console.log();
     console.log(
-      `==> MOCK ${this.name}: download of ${npmrds_export_request_id} COMPLETE`
+      `==> MOCK ${this.name}: ${npmrds_export_request_id} READY FOR DOWNLOAD`
     );
     console.log();
 
-    // FIXME: For this proof-of-concept, I'm using an existing NPMRDS export on my laptop
     const doneData = {
-      npmrds_export_name: "npmrdsx_vt_201602_v20220307T181553",
+      npmrds_export_request_id,
     };
 
     process.nextTick(() => this._resolveDoneData(doneData));
