@@ -19,9 +19,6 @@ export default class MockNpmrdsRequestExport implements TaskI {
   }
 
   receiveOthers(others: TaskI[]) {
-    console.log("==> MockNpmrdsRequestExport.receiveOthers");
-    console.log(JSON.stringify(others.map((o) => o.name)));
-
     this.dependencies = others.filter((o) =>
       MockNpmrdsRequestExport.dependenciesNames.includes(o.name)
     );

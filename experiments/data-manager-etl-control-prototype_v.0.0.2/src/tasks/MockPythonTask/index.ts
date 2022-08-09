@@ -14,8 +14,8 @@ export default class MockPythonTask implements TaskI {
   private dependencies: TaskI[];
 
   static readonly dependenciesNames = [
-    EtlTaskName.npmrds_load_travel_times,
-    EtlTaskName.npmrds_load_tmc_identification,
+    EtlTaskName.npmrds_publish_travel_times,
+    EtlTaskName.npmrds_publish_tmc_identification,
   ];
 
   constructor() {
@@ -30,9 +30,6 @@ export default class MockPythonTask implements TaskI {
   }
 
   receiveOthers(others: TaskI[]) {
-    console.log("==> MockPythonTask.receiveOthers");
-    console.log(JSON.stringify(others.map((o) => o.name)));
-
     this.dependencies = others.filter((o) =>
       MockPythonTask.dependenciesNames.includes(o.name)
     );

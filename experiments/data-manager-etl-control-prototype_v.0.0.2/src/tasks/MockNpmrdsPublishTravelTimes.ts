@@ -1,6 +1,6 @@
 import { TaskI, EtlTaskName } from "../types";
 
-export default class MockDownloadExport implements TaskI {
+export default class MockNpmrdsPublishTravelTimes implements TaskI {
   readonly name: EtlTaskName;
 
   private _done: boolean;
@@ -8,10 +8,13 @@ export default class MockDownloadExport implements TaskI {
   readonly doneData: Promise<Record<string, any>>;
   private dependencies: TaskI[];
 
-  static readonly dependenciesNames = [EtlTaskName.npmrds_export_ready];
+  static readonly dependenciesNames = [
+    EtlTaskName.npmrds_load_travel_times,
+    EtlTaskName.npmrds_prepublish_qa,
+  ];
 
   constructor() {
-    this.name = EtlTaskName.npmrds_download_export;
+    this.name = EtlTaskName.npmrds_publish_tmc_identification;
 
     this._done = false;
 
@@ -20,7 +23,7 @@ export default class MockDownloadExport implements TaskI {
 
   receiveOthers(others: TaskI[]) {
     this.dependencies = others.filter((o) =>
-      MockDownloadExport.dependenciesNames.includes(o.name)
+      MockNpmrdsPublishTravelTimes.dependenciesNames.includes(o.name)
     );
   }
 
@@ -42,17 +45,14 @@ export default class MockDownloadExport implements TaskI {
       return;
     }
 
-    const { npmrds_export_request_id } = await this.dependencies[0].doneData;
-
     console.log();
     console.log(
-      `==> MOCK ${this.name}: download of ${npmrds_export_request_id} COMPLETE`
+      `==> MOCK ${this.name}: published new npmrds travel times table`
     );
     console.log();
 
-    // FIXME: For this proof-of-concept, I'm using an existing NPMRDS export on my laptop
     const doneData = {
-      npmrds_export_name: "npmrdsx_vt_201601_v20220307T175956",
+      npmrds_table: "mock.npmrds_yYYYYmMM",
     };
 
     process.nextTick(() => this._resolveDoneData(doneData));

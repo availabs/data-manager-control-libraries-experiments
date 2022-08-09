@@ -1,5 +1,7 @@
 import _ from "lodash";
 
+// import EventBus from "../EventBus";
+
 import { TaskI } from "../types";
 
 export class PausableSuperStepController {
@@ -87,14 +89,17 @@ export class SuperStepEtlController {
       console.log("STEP:", step);
       console.log();
 
-      // Because of database locking issue, we need to run sequentially
-      for (const task of pending) {
-        await task.step();
-      }
+      // Because of SQLite locking issue, we need to run sequentially
+      // for (const task of pending) {
+      // await task.step();
+      // }
 
-      // await Promise.all(pending.map((t) => t.step()));
+      await Promise.all(pending.map((t) => t.step()));
 
+      const wasPending = pending.slice();
       pending = _.shuffle(pending.filter((t) => !t.done));
+
+      // const finished = _.difference(wasPending, pending);
 
       if (pending.length === 0) {
         break;

@@ -1,6 +1,8 @@
+// import EventBus from "../EventBus";
+
 import { TaskI, EtlTaskName } from "../types";
 
-export default class MockDownloadExport implements TaskI {
+export default class MockNpmrdsPrepublishQA implements TaskI {
   readonly name: EtlTaskName;
 
   private _done: boolean;
@@ -8,10 +10,13 @@ export default class MockDownloadExport implements TaskI {
   readonly doneData: Promise<Record<string, any>>;
   private dependencies: TaskI[];
 
-  static readonly dependenciesNames = [EtlTaskName.npmrds_export_ready];
+  static readonly dependenciesNames = [
+    EtlTaskName.npmrds_load_travel_times,
+    EtlTaskName.npmrds_load_tmc_identification,
+  ];
 
   constructor() {
-    this.name = EtlTaskName.npmrds_download_export;
+    this.name = EtlTaskName.npmrds_prepublish_qa;
 
     this._done = false;
 
@@ -20,7 +25,7 @@ export default class MockDownloadExport implements TaskI {
 
   receiveOthers(others: TaskI[]) {
     this.dependencies = others.filter((o) =>
-      MockDownloadExport.dependenciesNames.includes(o.name)
+      MockNpmrdsPrepublishQA.dependenciesNames.includes(o.name)
     );
   }
 
@@ -42,17 +47,16 @@ export default class MockDownloadExport implements TaskI {
       return;
     }
 
-    const { npmrds_export_request_id } = await this.dependencies[0].doneData;
-
     console.log();
-    console.log(
-      `==> MOCK ${this.name}: download of ${npmrds_export_request_id} COMPLETE`
-    );
+    console.log(`==> MOCK ${this.name}: Awaiting admin user QA approval`);
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    console.log(`==> MOCK ${this.name}: Admin user approved`);
     console.log();
 
-    // FIXME: For this proof-of-concept, I'm using an existing NPMRDS export on my laptop
     const doneData = {
-      npmrds_export_name: "npmrdsx_vt_201601_v20220307T175956",
+      npmrds_prepublish_qa: "PASSED",
     };
 
     process.nextTick(() => this._resolveDoneData(doneData));

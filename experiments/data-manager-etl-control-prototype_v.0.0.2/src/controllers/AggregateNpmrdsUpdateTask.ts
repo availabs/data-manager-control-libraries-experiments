@@ -9,6 +9,9 @@ import MockDownloadExport from "../tasks/MockDownloadExport";
 import DownloadedNpmrdsExportIntoSqlite from "../tasks/DownloadedNpmrdsExportIntoSqlite";
 import LoadNpmrdsTmcIdenfification from "../tasks/LoadNpmrdsTmcIdenfification";
 import LoadNpmrdsTravelTimes from "../tasks/LoadNpmrdsTravelTimes";
+import MockNpmrdsPrepublishQA from "../tasks/MockNpmrdsPrepublishQA";
+import MockNpmrdsPublishTravelTimes from "../tasks/MockNpmrdsPublishTravelTimes";
+import MockNpmrdsPublishTmcIdentification from "../tasks/MockNpmrdsPublishTmcIdentification";
 import MockPythonTask from "../tasks/MockPythonTask";
 
 export default class AggregateNpmrdsUpdateTask extends SuperStepEtlController {
@@ -24,6 +27,9 @@ export default class AggregateNpmrdsUpdateTask extends SuperStepEtlController {
         new DownloadedNpmrdsExportIntoSqlite(),
         new LoadNpmrdsTmcIdenfification(),
         new LoadNpmrdsTravelTimes(),
+        new MockNpmrdsPrepublishQA(),
+        new MockNpmrdsPublishTravelTimes(),
+        new MockNpmrdsPublishTmcIdentification(),
         new MockPythonTask(),
       ]
       // ])
