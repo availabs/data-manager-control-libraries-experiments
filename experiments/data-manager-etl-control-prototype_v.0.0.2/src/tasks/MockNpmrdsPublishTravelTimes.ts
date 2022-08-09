@@ -14,7 +14,7 @@ export default class MockNpmrdsPublishTravelTimes implements TaskI {
   ];
 
   constructor() {
-    this.name = EtlTaskName.npmrds_publish_tmc_identification;
+    this.name = EtlTaskName.npmrds_publish_travel_times;
 
     this._done = false;
 
