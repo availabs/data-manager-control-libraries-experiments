@@ -22,9 +22,14 @@ coordinates the execution of the following [ETL Tasks](./src/tasks):
 This is a proof of concept.
 Actually running the code requires the following dependencies:
 
-- A running instance of the [NPMRDS_Database development database](https://github.com/availabs/NPMRDS_Database/tree/master/docker)
-- An NPMRDS Export download named 'npmrdsx_vt_201601_v20220307T175956' in the
-  local avail-datasources-watcher repository.
+- A local copy of [avail/NPMRDS_Database](https://github.com/availabs/NPMRDS_Database/tree/master/docker)
+
+  - With npm dependencies installed
+  - A running instance of the [development database](https://github.com/availabs/NPMRDS_Database/tree/master/docker)
+
+- A local copy of [availabs/avail-datasources-watcher](https://github.com/availabs/avail-datasources-watcher)
+  - With npm dependencies installed
+  - An NPMRDS Export download named 'npmrdsx_vt_201601_v20220307T175956' in data/ritis/npmrds/
 
 ```sh
 ./admin-server/start
