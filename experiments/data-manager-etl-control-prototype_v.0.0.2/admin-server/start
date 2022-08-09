@@ -9,6 +9,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+const EventBus = require("../src/EventBus").default;
+
 const AggregateNpmrdsUpdateTask =
   require("../src/controllers/AggregateNpmrdsUpdateTask").default;
 const NpmrdsUpdateRequest = require("../src/tasks/NpmrdsUpdateRequest").default;
@@ -17,6 +19,18 @@ app.use(bodyParser.json());
 
 const PORT = 5566;
 // const PG_ENV = "development";
+
+const queuedUiEvents = [];
+
+EventBus.on("ETL_CONTROL_REQUIRES_ADMIN_APPROVAL", (event) => {
+  console.log(event);
+  queuedUiEvents.push(event);
+});
+
+EventBus.on("ETL_PROGRESS_UPDATE", (event) => {
+  console.log(event);
+  queuedUiEvents.push(event);
+});
 
 app.use(function cors(req, res, next) {
   res.header("Access-Control-Allow-Origin", req.get("origin"));
@@ -43,16 +57,27 @@ app.get("/", (_req, res) => res.sendFile(join(__dirname, "./index.html")));
 
 app.post("/event", async (req, res, next) => {
   try {
-    if (req.body.type === "NPMRDS_UPDATE_REQUEST") {
-      console.log(JSON.stringify(req.body, null, 4));
+    console.log(JSON.stringify(req.body, null, 4));
 
+    if (req.body.type === "NPMRDS_UPDATE_REQUEST") {
       const task = new NpmrdsUpdateRequest(req.body);
       const controller = new AggregateNpmrdsUpdateTask(task);
 
-      controller.main();
+      await controller.main();
 
       res.json({ type: "UPDATE_TASK_DONE" });
+    } else if (req.body.type === "ADMIN_APPROVES_ETL_CONTROL") {
+      EventBus.emit("ADMIN_APPROVES_ETL_CONTROL", req.body);
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/queued-ui-events", async (_req, res, next) => {
+  try {
+    res.json(queuedUiEvents);
+    queuedUiEvents.length = 0;
   } catch (err) {
     next(err);
   }

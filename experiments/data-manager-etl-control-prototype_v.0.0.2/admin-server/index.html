@@ -81,6 +81,9 @@
 
       let currentHoveredFeature = null;
 
+      let awaitingUpdate = false;
+      let etlRequiresApproval = false;
+
       // Create a theme instance.
       const theme = createTheme({
         palette: {
@@ -96,14 +99,46 @@
         },
       });
 
+      const pollForEvent = async () => {
+        // console.log("poll for event");
+        const res = await fetch(`/queued-ui-events`, {
+          method: "GET",
+        });
+
+        const events = await res.json();
+        // console.log("got poll response");
+
+        if (events.length) {
+          for (const e of events) {
+            console.log(e);
+          }
+
+          if (
+            events.some(
+              ({ type }) => type === "ETL_CONTROL_REQUIRES_ADMIN_APPROVAL"
+            )
+          ) {
+            etlRequiresApproval = true;
+            forceUpdate();
+          }
+        }
+
+        setTimeout(pollForEvent, 1000);
+      };
+
+      pollForEvent();
+
       async function postEvent(event) {
         console.log(event);
-        const idRes = await fetch(`/event`, {
+        const res = await fetch(`/event`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(event),
         });
-        console.log(await idRes.json());
+        console.log(await res.json());
+
+        awaitingUpdate = false;
+        forceUpdate();
       }
 
       function DataSourceSelector() {
@@ -121,7 +156,7 @@
                   id="layer-selector"
                   value={dataSource}
                   label="Layer Name"
-                  disabled={true}
+                  disabled={false}
                   onChange={(e) => selectLayer(e.target.value)}
                 >
                   {dataSources.map((dataSrc) => (
@@ -172,7 +207,10 @@
               <Button
                 variant="contained"
                 component="label"
+                disabled={awaitingUpdate}
                 onClick={() => {
+                  awaitingUpdate = true;
+                  forceUpdate();
                   postEvent({
                     type: "NPMRDS_UPDATE_REQUEST",
                     payload: {
@@ -189,6 +227,27 @@
               >
                 Submit Update Request
               </Button>
+
+              {etlRequiresApproval ? (
+                <Button
+                  variant="contained"
+                  component="label"
+                  onClick={() => {
+                    postEvent({
+                      type: "ADMIN_APPROVES_ETL_CONTROL",
+                      payload: {},
+                      metadata: {
+                        user: "mock-admin",
+                        timestamp: new Date().toISOString(),
+                      },
+                    });
+                    etlRequiresApproval = false;
+                    forceUpdate();
+                  }}
+                >
+                  Approve QA
+                </Button>
+              ) : null}
             </Paper>
           </div>
         );

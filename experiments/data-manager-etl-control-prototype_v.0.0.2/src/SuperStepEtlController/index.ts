@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-// import EventBus from "../EventBus";
+import EventBus from "../EventBus";
 
 import { TaskI } from "../types";
 
@@ -99,7 +99,15 @@ export class SuperStepEtlController {
       const wasPending = pending.slice();
       pending = _.shuffle(pending.filter((t) => !t.done));
 
-      // const finished = _.difference(wasPending, pending);
+      const finished = _.difference(this.tasks, pending);
+
+      EventBus.emit("ETL_PROGRESS_UPDATE", {
+        type: "ETL_PROGRESS_UPDATE",
+        payload: {
+          finished: finished.map(({ name }) => name),
+          pending: pending.map(({ name }) => name),
+        },
+      });
 
       if (pending.length === 0) {
         break;

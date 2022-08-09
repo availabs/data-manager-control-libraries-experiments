@@ -1,4 +1,4 @@
-// import EventBus from "../EventBus";
+import EventBus from "../EventBus";
 
 import { TaskI, EtlTaskName } from "../types";
 
@@ -10,6 +10,8 @@ export default class MockNpmrdsPrepublishQA implements TaskI {
   readonly doneData: Promise<Record<string, any>>;
   private dependencies: TaskI[];
 
+  private approved: null | boolean;
+
   static readonly dependenciesNames = [
     EtlTaskName.npmrds_load_travel_times,
     EtlTaskName.npmrds_load_tmc_identification,
@@ -19,6 +21,7 @@ export default class MockNpmrdsPrepublishQA implements TaskI {
     this.name = EtlTaskName.npmrds_prepublish_qa;
 
     this._done = false;
+    this.approved = null;
 
     this.doneData = new Promise((resolve) => (this._resolveDoneData = resolve));
   }
@@ -38,6 +41,10 @@ export default class MockNpmrdsPrepublishQA implements TaskI {
       return;
     }
 
+    if (this.approved === false) {
+      return;
+    }
+
     const pendingDeps = this.dependencies
       .filter((d) => !d.done)
       .map(({ name }) => name);
@@ -47,10 +54,26 @@ export default class MockNpmrdsPrepublishQA implements TaskI {
       return;
     }
 
-    console.log();
-    console.log(`==> MOCK ${this.name}: Awaiting admin user QA approval`);
+    if (this.approved === null) {
+      this.approved = false;
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+      console.log();
+      console.log(`==> MOCK ${this.name}: Awaiting admin user QA approval`);
+
+      EventBus.emit("ETL_CONTROL_REQUIRES_ADMIN_APPROVAL", {
+        type: "ETL_CONTROL_REQUIRES_ADMIN_APPROVAL",
+      });
+
+      await new Promise<void>((resolve) => {
+        EventBus.once("ADMIN_APPROVES_ETL_CONTROL", (event) => {
+          console.log(event);
+          this.approved = true;
+          resolve();
+        });
+      });
+
+      return;
+    }
 
     console.log(`==> MOCK ${this.name}: Admin user approved`);
     console.log();
