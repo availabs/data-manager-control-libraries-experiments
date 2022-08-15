@@ -2,43 +2,76 @@ import _ from "lodash";
 
 import RootEtlController from "../../../core/RootEtlController";
 
-import { SubTaskStatus, EtlInitialContext } from "../../../core/types";
+import { TaskI, SubTaskStatus, EtlInitialContext } from "../../../core/types";
 
 import NpmrdsRequestUpdate from "../npmrds_admin/NpmrdsRequestUpdate";
 
 import NpmrdsTravelTimes from "../npmrds_travel_times";
 import NpmrdsTmcIdentification from "../npmrds_tmc_identification";
 
-const npmrdsStateYearMonth = { state: "vt", year: 2016, month: 1 };
+type Config = {
+  state: string;
+  year: number;
+  month: number;
+};
 
-async function main() {
-  try {
-    const etlDoneTasks = {
-      // @ts-ignore
-      [NpmrdsRequestUpdate.name]: {
-        doneData: npmrdsStateYearMonth,
-        status: SubTaskStatus.DONE,
-      },
-    };
+export default class NpmrdsUpdateRunner implements TaskI {
+  readonly name: string;
 
-    const etlInitalContext = <EtlInitialContext>{
-      etlDoneTasks,
-      eltObjectives: [NpmrdsTravelTimes, NpmrdsTmcIdentification],
-    };
+  readonly state: string;
+  readonly year: number;
+  readonly month: number;
 
-    const task = new RootEtlController(etlInitalContext);
+  constructor(config: Config) {
+    this.name = "NpmrdsUpdateRunner";
 
-    const taskContext = {
-      [NpmrdsRequestUpdate.name]: npmrdsStateYearMonth,
-    };
+    this.state = config.state;
+    this.year = config.year;
+    this.month = config.month;
+  }
+  async main() {
+    try {
+      const { state, year, month } = this;
 
-    console.log("STARTING");
-    console.log(JSON.stringify({ taskContext }, null, 4));
-    await task.main(taskContext);
-    console.log("DONE");
-  } catch (err) {
-    console.error(err);
+      const etlDoneTasks = {
+        // @ts-ignore
+        [NpmrdsRequestUpdate.name]: {
+          doneData: {
+            state,
+            year,
+            month,
+          },
+          status: SubTaskStatus.DONE,
+        },
+      };
+
+      const etlInitalContext = <EtlInitialContext>{
+        etlDoneTasks,
+        eltObjectives: [NpmrdsTravelTimes, NpmrdsTmcIdentification],
+      };
+
+      const task = new RootEtlController(etlInitalContext);
+
+      const taskContext = {
+        [NpmrdsRequestUpdate.name]: {
+          state,
+          year,
+          month,
+        },
+      };
+
+      console.log("STARTING");
+      console.log(JSON.stringify({ taskContext }, null, 4));
+      await task.main(taskContext);
+      console.log("DONE");
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
 
-main();
+new NpmrdsUpdateRunner({
+  state: "vt",
+  year: 2016,
+  month: 1,
+}).main();
