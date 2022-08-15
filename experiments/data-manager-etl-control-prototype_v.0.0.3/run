@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+../../node_modules/.bin/ts-node -T ./src/tasks/npmrds/tests/run_3.ts
