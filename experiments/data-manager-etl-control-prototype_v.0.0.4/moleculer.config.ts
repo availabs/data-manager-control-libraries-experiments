@@ -76,7 +76,7 @@ const brokerConfig: BrokerOptions = {
 	serializer: "JSON",
 
 	// Number of milliseconds to wait before reject a request with a RequestTimeout error. Disabled: 0
-	requestTimeout: 10 * 1000,
+	requestTimeout: 0,
 
 	// Retry policy settings. More info: https://moleculer.services/docs/0.14/fault-tolerance.html#Retry
 	retryPolicy: {
@@ -152,7 +152,7 @@ const brokerConfig: BrokerOptions = {
 	},
 
 	// Enable action & event parameter validation. More info: https://moleculer.services/docs/0.14/validating.html
-	validator: true,
+	validator: "Fastest",
 
 	errorHandler: null,
 
