@@ -13,173 +13,169 @@ export type NodePgConnection = Connection;
 export type PgEnv = "production" | "development";
 
 export type PsqlConfig = {
-	PGHOST?: string;
-	PGHOSTADDR?: string;
-	PGPORT?: string | number;
-	PGDATABASE?: string;
-	PGUSER?: string;
-	PGPASSWORD?: string;
-	PGPASSFILE?: string;
-	PGSERVICE?: string;
-	PGSERVICEFILE?: string;
-	PGOPTIONS?: string;
-	PGAPPNAME?: string;
-	PGSSLMODE?: string;
-	PGREQUIRESSL?: string;
-	PGSSLCOMPRESSION?: string;
-	PGSSLCERT?: string;
-	PGSSLKEY?: string;
-	PGSSLROOTCERT?: string;
-	PGSSLCRL?: string;
-	PGREQUIREPEER?: string;
-	PGKRBSRVNAME?: string;
-	PGGSSLIB?: string;
-	PGCONNECT_TIMEOUT?: string;
-	PGCLIENTENCODING?: string;
-	PGTARGETSESSIONATTRS?: string;
-	PGDATESTYLE?: string;
-	PGTZ?: string;
-	PGGEQO?: string;
-	PGSYSCONFDIR?: string;
-	PGLOCALEDIR?: string;
+  PGHOST?: string;
+  PGHOSTADDR?: string;
+  PGPORT?: string | number;
+  PGDATABASE?: string;
+  PGUSER?: string;
+  PGPASSWORD?: string;
+  PGPASSFILE?: string;
+  PGSERVICE?: string;
+  PGSERVICEFILE?: string;
+  PGOPTIONS?: string;
+  PGAPPNAME?: string;
+  PGSSLMODE?: string;
+  PGREQUIRESSL?: string;
+  PGSSLCOMPRESSION?: string;
+  PGSSLCERT?: string;
+  PGSSLKEY?: string;
+  PGSSLROOTCERT?: string;
+  PGSSLCRL?: string;
+  PGREQUIREPEER?: string;
+  PGKRBSRVNAME?: string;
+  PGGSSLIB?: string;
+  PGCONNECT_TIMEOUT?: string;
+  PGCLIENTENCODING?: string;
+  PGTARGETSESSIONATTRS?: string;
+  PGDATESTYLE?: string;
+  PGTZ?: string;
+  PGGEQO?: string;
+  PGSYSCONFDIR?: string;
+  PGLOCALEDIR?: string;
 };
 
 export type NodePgConfig = {
-	user?: string;
-	host?: string;
-	database?: string;
-	password?: string;
-	port?: number;
+  user?: string;
+  host?: string;
+  database?: string;
+  password?: string;
+  port?: number;
 };
 
 export const postgresEnvVariables = {
-	PGHOST: "the host connection parameter",
+  PGHOST: "the host connection parameter",
 
-	PGHOSTADDR:
-		"the hostaddr connection parameter. This can be set instead of or in addition to PGHOST to avoid DNS lookup overhead",
+  PGHOSTADDR:
+    "the hostaddr connection parameter. This can be set instead of or in addition to PGHOST to avoid DNS lookup overhead",
 
-	PGPORT: "the port connection parameter",
+  PGPORT: "the port connection parameter",
 
-	PGDATABASE: "the dbname connection parameter",
+  PGDATABASE: "the dbname connection parameter",
 
-	PGUSER: "the user connection parameter",
+  PGUSER: "the user connection parameter",
 
-	PGPASSWORD:
-		"the password connection parameter. Use of this environment variable is not recommended for security reasons, as some operating systems allow non-root users to see process environment variables via ps; instead consider using a password file (see Section 34.15)",
+  PGPASSWORD:
+    "the password connection parameter. Use of this environment variable is not recommended for security reasons, as some operating systems allow non-root users to see process environment variables via ps; instead consider using a password file (see Section 34.15)",
 
-	PGPASSFILE: "the passfile connection parameter",
+  PGPASSFILE: "the passfile connection parameter",
 
-	PGSERVICE: "the service connection parameter",
+  PGSERVICE: "the service connection parameter",
 
-	PGSERVICEFILE:
-		"specifies the name of the per-user connection service file. If not set, it defaults to ~/.pg_service.conf (see Section 34.16)",
+  PGSERVICEFILE:
+    "specifies the name of the per-user connection service file. If not set, it defaults to ~/.pg_service.conf (see Section 34.16)",
 
-	PGOPTIONS: "the options connection parameter",
+  PGOPTIONS: "the options connection parameter",
 
-	PGAPPNAME: "the application_name connection parameter",
+  PGAPPNAME: "the application_name connection parameter",
 
-	PGSSLMODE: "the sslmode connection parameter",
+  PGSSLMODE: "the sslmode connection parameter",
 
-	PGREQUIRESSL:
-		"the requiressl connection parameter. This environment variable is deprecated in favor of the PGSSLMODE variable; setting both variables suppresses the effect of this one",
+  PGREQUIRESSL:
+    "the requiressl connection parameter. This environment variable is deprecated in favor of the PGSSLMODE variable; setting both variables suppresses the effect of this one",
 
-	PGSSLCOMPRESSION: "the sslcompression connection parameter",
+  PGSSLCOMPRESSION: "the sslcompression connection parameter",
 
-	PGSSLCERT: "the sslcert connection parameter",
+  PGSSLCERT: "the sslcert connection parameter",
 
-	PGSSLKEY: "the sslkey connection parameter",
+  PGSSLKEY: "the sslkey connection parameter",
 
-	PGSSLROOTCERT: "the sslrootcert connection parameter",
+  PGSSLROOTCERT: "the sslrootcert connection parameter",
 
-	PGSSLCRL: "the sslcrl connection parameter",
+  PGSSLCRL: "the sslcrl connection parameter",
 
-	PGREQUIREPEER: "the requirepeer connection parameter",
+  PGREQUIREPEER: "the requirepeer connection parameter",
 
-	PGKRBSRVNAME: "the krbsrvname connection parameter",
+  PGKRBSRVNAME: "the krbsrvname connection parameter",
 
-	PGGSSLIB: "the gsslib connection parameter",
+  PGGSSLIB: "the gsslib connection parameter",
 
-	PGCONNECT_TIMEOUT: "the connect_timeout connection parameter",
+  PGCONNECT_TIMEOUT: "the connect_timeout connection parameter",
 
-	PGCLIENTENCODING: "the client_encoding connection parameter",
+  PGCLIENTENCODING: "the client_encoding connection parameter",
 
-	PGTARGETSESSIONATTRS: "the target_session_attrs connection parameter",
+  PGTARGETSESSIONATTRS: "the target_session_attrs connection parameter",
 
-	PGDATESTYLE:
-		"sets the default style of date/time representation. (Equivalent to SET datestyle TO ....",
+  PGDATESTYLE:
+    "sets the default style of date/time representation. (Equivalent to SET datestyle TO ....",
 
-	PGTZ: "sets the default time zone. (Equivalent to SET timezone TO ....",
+  PGTZ: "sets the default time zone. (Equivalent to SET timezone TO ....",
 
-	PGGEQO: "sets the default mode for the genetic query optimizer. (Equivalent to SET geqo TO ....",
+  PGGEQO:
+    "sets the default mode for the genetic query optimizer. (Equivalent to SET geqo TO ....",
 
-	PGSYSCONFDIR:
-		"sets the directory containing the pg_service.conf file and in a future version possibly other system-wide configuration files",
+  PGSYSCONFDIR:
+    "sets the directory containing the pg_service.conf file and in a future version possibly other system-wide configuration files",
 
-	PGLOCALEDIR:
-		"sets the directory containing the locale files for message localization",
+  PGLOCALEDIR:
+    "sets the directory containing the locale files for message localization",
 };
 
 export const getPostgresConfigurationFilePath = (pgEnv: PgEnv) => {
-	return join(configDir, `postgres.${pgEnv}.env`);
+  return join(configDir, `postgres.${pgEnv}.env`);
 };
 
 export const getPsqlCredentials = (pgEnv: PgEnv) => {
-	const configPath = getPostgresConfigurationFilePath(pgEnv);
-	const configContents = readFileSync(configPath);
+  const configPath = getPostgresConfigurationFilePath(pgEnv);
+  const configContents = readFileSync(configPath);
 
-	const envVars = dotenv.parse(configContents);
+  const envVars = dotenv.parse(configContents);
 
-	return _.pick(envVars, Object.keys(postgresEnvVariables));
+  return _.pick(envVars, Object.keys(postgresEnvVariables));
 };
 
 export const getNodePgCredentials = (pgEnv: PgEnv) => {
-	const pgCreds = getPsqlCredentials(pgEnv);
-	const nodePgCreds = _.mapKeys(pgCreds, (_v, k) => _.lowerCase(k).slice(2));
+  const pgCreds = getPsqlCredentials(pgEnv);
 
-	return nodePgCreds;
+  console.log(JSON.stringify({ pgCreds }, null, 4));
+
+  const nodePgCreds = _.mapKeys(pgCreds, (_v, k) => _.lowerCase(k).slice(2));
+
+  return nodePgCreds;
 };
 
-// Make sure to call db.end() or Node will hang.
-export async function getConnectedPgClient(pgEnv: PgEnv) {
-	const nodePgCreds = getNodePgCredentials(pgEnv);
-
-	const db = new Client(nodePgCreds);
-	await db.connect();
-
-	return db;
-}
-
 export const getPostgresConnectionString = (pgEnv: PgEnv) => {
-	const {
-		user = "postgres",
-		host = "localhost",
-		database = null,
-		password = null,
-		port = 5432,
-	} = getNodePgCredentials(pgEnv);
+  const {
+    user = "postgres",
+    host = "localhost",
+    database = null,
+    password = null,
+    port = 5432,
+  } = getNodePgCredentials(pgEnv);
 
-	const connStr = `host='${host}' user='${user}' dbname='${database}' password='${password}' port='${port}'`;
+  const connStr = `host='${host}' user='${user}' dbname='${database}' password='${password}' port='${port}'`;
 
-	return connStr;
+  return connStr;
 };
 
 // Make sure to call db.end() or Node will hang.
 export async function getConnectedNodePgClient(
-	pgEnv: PgEnv
+  pgEnv: PgEnv
 ): Promise<NodePgClient> {
-	const nodePgCreds = getNodePgCredentials(pgEnv);
+  const nodePgCreds = getNodePgCredentials(pgEnv);
 
-	const db = new Client(nodePgCreds);
-	await db.connect();
+  console.log(JSON.stringify({ nodePgCreds }, null, 4));
 
-	return db;
+  const db = new Client(nodePgCreds);
+  await db.connect();
+
+  return db;
 }
 
 export const pgEnvCliArgsSpec = {
-	pg_env: {
-		type: "string",
-		demand: false,
-		choices: ["development", "production"],
-		default: "development",
-	},
+  pg_env: {
+    type: "string",
+    demand: false,
+    choices: ["development", "production"],
+    default: "development",
+  },
 };

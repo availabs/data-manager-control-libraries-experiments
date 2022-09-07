@@ -1,1 +1,1 @@
-*.production.env
+!.gitignore
