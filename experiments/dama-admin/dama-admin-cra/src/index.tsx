@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { store } from "./app/store";
 import App from "./Components/App/App";
+import DaMaAdmin from "./Components/DaMaAdmin/DaMaAdmin";
 
 import "./index.css";
 
@@ -20,7 +21,7 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />} />
-          <Route path="/foo" element={<span>FOO</span>} />
+          <Route path="/dama-admin" element={<DaMaAdmin />} />
         </Routes>
       </BrowserRouter>
     </Provider>
