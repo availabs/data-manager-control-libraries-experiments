@@ -33,8 +33,7 @@ root.render(
         <CssBaseline />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/dama-admin" element={<DaMaAdmin />} />
+            <Route path="/" element={<DaMaAdmin />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
