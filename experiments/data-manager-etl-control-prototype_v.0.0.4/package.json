@@ -20,6 +20,7 @@
   ],
   "author": "",
   "devDependencies": {
+    "@types/express-http-proxy": "^1.6.3",
     "@types/node": "^13.13.52",
     "@types/pg": "^8.6.5",
     "@types/pg-format": "^1.0.2",
@@ -38,6 +39,7 @@
     "@types/mkdirp": "^1.0.0",
     "better-sqlite3": "^7.6.2",
     "dotenv": "^16.0.2",
+    "express-http-proxy": "^1.6.3",
     "flux-standard-action": "^2.1.2",
     "moleculer": "^0.14.23",
     "moleculer-db": "^0.8.19",

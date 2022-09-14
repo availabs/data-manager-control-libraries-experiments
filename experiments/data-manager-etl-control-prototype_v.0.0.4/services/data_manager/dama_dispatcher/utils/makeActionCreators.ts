@@ -1,5 +1,3 @@
-// FIXME: improve for DAMAA
-
 import uuid from "uuid";
 
 import { Context } from "moleculer";
