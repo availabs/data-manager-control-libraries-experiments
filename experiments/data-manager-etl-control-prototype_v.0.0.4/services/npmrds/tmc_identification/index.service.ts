@@ -13,15 +13,12 @@ import { stateAbbr2FipsCode } from "../../shared/geo/stateFipsCodes";
 
 import datamanagerNpmrdsViewBase from "../shared/datamanager";
 
-export const dataSourceName = "USDOT/FHWA/NPMRDS/TMC_IDENTIFICATION";
+export const dataSourceParentClass = "USDOT/FHWA/NPMRDS";
+export const dataSourceName = `${dataSourceParentClass}/TMC_IDENTIFICATION`;
 
 export type TaskParams = {
   npmrds_export_sqlite_db_path: string;
   pg_env: PostgresEnvironments;
-};
-
-export type ServiceContext = Context & {
-  params: TaskParams;
 };
 
 export type EventMetadata = object & { pg_env: PostgresEnvironments };
@@ -32,34 +29,40 @@ export default {
   name: "npmrds_tmc_identification",
 
   events: {
+    [`${dataSourceParentClass}::LOAD_REQUEST`]: {
+      context: true,
+      // params: FSAEventParam,
+      async handler(ctx: Context) {
+        const event = {
+          // @ts-ignore
+          ...ctx.params,
+          type: `${dataSourceName}::LOAD_REQUEST`,
+        };
+
+        await this.broker.emit(event);
+      },
+    },
     [`${dataSourceName}::LOAD_REQUEST`]: {
       context: true,
       // params: FSAEventParam,
-      async handler(ctx: ServiceContext) {
+      async handler(ctx: Context) {
         await this.stage(ctx.params);
       },
     },
     [`${dataSourceName}::QA_APPROVED`]: {
       context: true,
       // params: FSAEventParam,
-      async handler(ctx: ServiceContext) {
+      async handler(ctx: Context) {
         await this.makeViewMetadataTemplate(ctx.params);
       },
     },
     [`${dataSourceName}::VIEW_METADATA_SUBMITTED`]: {
       context: true,
       // params: FSAEventParam,
-      async handler(ctx: ServiceContext) {
+      async handler(ctx: Context) {
         await this.publish(ctx.params);
       },
     },
-    // [`${dataSourceName}::PUBLISH`]: {
-    // context: true,
-    // // params: FSAEventParam,
-    // async handler(ctx: ServiceContext) {
-    // await this.stage(ctx.params);
-    // },
-    // },
   },
 
   methods: {
@@ -178,6 +181,7 @@ export default {
           data_source_name: dataSourceName,
           data_type: "TABULAR",
           interval_version: "YEAR",
+          version: "-1",
           geography_version,
           table_schema,
           table_name,
@@ -201,8 +205,6 @@ export default {
         };
 
         const damaEvent = await this.broker.call("dama_dispatcher.dispatch", e);
-
-        console.log(JSON.stringify({ e, damaEvent }, null, 4));
 
         return damaEvent;
       },
@@ -233,11 +235,16 @@ export default {
 
         const start_timestamp = new Date().toISOString();
 
-        const newPayload = await publishTmcIdentification({
+        const publishResult = await publishTmcIdentification({
           table_schema,
           table_name,
           pg_env,
         });
+
+        await this.broker.call(
+          "dama_meta.updateDataManagerViewMetadata",
+          event
+        );
 
         const end_timestamp = new Date().toISOString();
 
@@ -245,8 +252,14 @@ export default {
 
         const e = {
           type,
-          payload: newPayload,
-          meta: { ...oldMeta, DAMAA: true, start_timestamp, end_timestamp },
+          payload: publishResult,
+          meta: {
+            ...oldMeta,
+            DAMAA: true,
+            checkpoint: true,
+            start_timestamp,
+            end_timestamp,
+          },
         };
 
         const damaEvent = await this.broker.call("dama_dispatcher.dispatch", e);
