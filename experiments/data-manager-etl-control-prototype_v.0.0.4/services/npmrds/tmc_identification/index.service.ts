@@ -29,7 +29,7 @@ export default {
   name: "npmrds_tmc_identification",
 
   events: {
-    [`${dataSourceParentClass}::LOAD_REQUEST`]: {
+    [`${dataSourceParentClass}::UPDATE`]: {
       context: true,
       // params: FSAEventParam,
       async handler(ctx: Context) {
@@ -46,7 +46,9 @@ export default {
       context: true,
       // params: FSAEventParam,
       async handler(ctx: Context) {
-        await this.stage(ctx.params);
+        const loadedEvent = await this.stage(ctx.params);
+
+        await this.requestQA(loadedEvent);
       },
     },
     [`${dataSourceName}::QA_APPROVED`]: {
@@ -113,8 +115,6 @@ export default {
           "dama_dispatcher.dispatch",
           loadedEvent
         );
-
-        process.nextTick(() => this.requestQA(loadedEvent));
 
         return damaEvent;
       },
@@ -204,6 +204,9 @@ export default {
           meta,
         };
 
+        // FIXME: Should just return the view metadata.
+        //        dispatch should happen in the event handler.
+        //        loose coupling.
         const damaEvent = await this.broker.call("dama_dispatcher.dispatch", e);
 
         return damaEvent;
@@ -241,18 +244,18 @@ export default {
           pg_env,
         });
 
-        await this.broker.call(
+        const { dama_view_id } = await this.broker.call(
           "dama_meta.updateDataManagerViewMetadata",
           event
         );
 
         const end_timestamp = new Date().toISOString();
 
-        const type = `${dataSourceName}::PUBLISHED`;
+        const type = `${dataSourceName}::FINAL`;
 
         const e = {
           type,
-          payload: publishResult,
+          payload: { ...publishResult, dama_view_id },
           meta: {
             ...oldMeta,
             DAMAA: true,

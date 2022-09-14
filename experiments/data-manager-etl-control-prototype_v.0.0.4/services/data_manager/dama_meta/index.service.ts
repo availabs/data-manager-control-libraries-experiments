@@ -85,11 +85,16 @@ export default {
                 ${selectClauses}
               FROM _data_manager_admin.data_sources_proto AS a
               WHERE ( name = $${queryParams.push(data_source_name)} )
+            RETURNING id
           ;
         `;
 
         console.log(insertQ);
-        await db.query(insertQ, queryParams);
+        const {
+          rows: [{ id: dama_view_id }],
+        } = await db.query(insertQ, queryParams);
+
+        return { dama_view_id };
       },
     },
   },
